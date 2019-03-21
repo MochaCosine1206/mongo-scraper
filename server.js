@@ -1,6 +1,7 @@
 var express = require("express");
 var logger = require("morgan");
 var mongoose = require("mongoose");
+var path = require("path");
 
 // Our scraping tools
 // Axios is a promised-based http library, similar to jQuery's Ajax method
@@ -34,7 +35,6 @@ mongoose.connect(MONGODB_URI);
 
 
 
-// Routes
 
 // A GET route for scraping the echoJS website
 app.get("/scrape", function(req, res) {
@@ -53,12 +53,14 @@ app.get("/scrape", function(req, res) {
       result.title = $(this).find("h2").text();
       result.link = $(this).find("a").attr("href");
       result.img = $(this).find("noscript").children().first().attr("src");
+      result.timeCreated = $(this).find("time").attr("datetime")
 
+      
       // Create a new Article using the `result` object built from scraping
       db.Article.create(result)
         .then(function(dbArticle) {
           // View the added result in the console
-          console.log(dbArticle);
+          res.json(dbArticle);
         })
         .catch(function(err) {
           // If an error occurred, log it
@@ -74,9 +76,9 @@ app.get("/scrape", function(req, res) {
 // Route for getting all Articles from the db
 app.get("/articles", function(req, res) {
   // TODO: Finish the route so it grabs all of the articles
-  db.Article.find({})
+  db.Article.find({}).sort({timeCreated: -1})
   .then(function(dbArticle) {
-    res.json(dbArticle);
+    res.json(dbArticle)
   })
   .catch(function(err){
     res.json(err);
@@ -100,6 +102,22 @@ app.get("/articles/:id", function(req, res) {
   })
 });
 
+app.delete("/notes/:id", function(req, res){
+  console.log("this is the id: " + req.params.id)
+  idArr = req.params.id.split(",");
+  console.log("id Array: " + idArr)
+  db.Note.remove({"_id": idArr[0]})
+  .then(function(){
+    return  db.Article.update({"_id": idArr[1]},{ $pull: {'note': idArr[0]}})
+  })
+  .then(function(dbArticle){
+    res.json(dbArticle)
+  })
+  .catch(function(err){
+    res.json(err);
+  })
+})
+
 // Route for saving/updating an Article's associated Note
 app.post("/articles/:id", function(req, res) {
   // TODO
@@ -110,7 +128,7 @@ app.post("/articles/:id", function(req, res) {
   db.Note.create(req.body)
   .then(function(dbNotes){
     
-    return db.Article.findOneAndUpdate({"_id": req.params.id},{'note': dbNotes.id}, { new: true } );
+    return db.Article.findOneAndUpdate({"_id": req.params.id},{ $push: {'note': dbNotes.id}}, { new: true } );
   })
   .then(function(dbArticle){
     res.json(dbArticle)
@@ -119,8 +137,18 @@ app.post("/articles/:id", function(req, res) {
     res.json(err);
   })
 });
+//Route for getting all notes
+app.get("/articleNotes/", function(req, res){
+})
 
 // Start the server
 app.listen(PORT, function() {
   console.log("App running on port " + PORT + "!");
 });
+
+app.get("/", function(req, res){
+  res.sendFile(path.join(__dirname, "index.html"));
+})
+
+
+
