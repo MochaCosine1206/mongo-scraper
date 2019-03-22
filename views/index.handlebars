@@ -1,0 +1,26 @@
+<div class="container">
+    <div class="row">
+      <div class="col-xs-12 col-md-9">
+        <div class="card-columns" id="articles">
+            {{#each articles}}
+                <div class="card" id="articleCard" saved="false" data-id={{data.id}}>
+                    <div class="card-body">
+                        <img class="card-img-top" src={{articles.img}}></img>
+                        <h5 class="card-title">{{article.title}}</h5>
+                        <a class="card-link" attr={{article.link}}>{{article.link}}</a>
+                        <button class="btn-btn-primary">Save Article</button>
+                    </div>
+                </div>
+            {{/each}}
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-3">
+        <div id="notes" class="sticky-top">
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="app.js"></script>
