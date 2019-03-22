@@ -4,7 +4,7 @@ $.getJSON("/articles", function (data) {
   for (var i = 0; i < data.length; i++) {
 
     // Display the apropos information on the page
-    let articleCard = $("<div>").addClass("card").attr("id", "articleCard").attr("saved", "false");
+    let articleCard = $("<div>").addClass("card shadow").attr("id", "articleCard").attr("saved", "false");
     let articleImg = $("<img>").addClass("card-img-top");
     articleImg.attr("src", data[i].img);
     let articleCardBody = $("<div>").addClass("card-body");
@@ -26,11 +26,10 @@ $("#scrapeButton").click(function () {
     url: "/scrape"
   })
     // With that done, add the note information to the page
-    .then(function (data) {
-      console.log(data)
-      alert(data.articles.length + " articles scraped!");
+    .then(function () {
+      location.reload();
     });
-  location.reload();
+  
 })
 
 // Whenever someone clicks a articleCard
@@ -48,7 +47,7 @@ $(document).on("click", "#deleteButton", function () {
   // Save the id from the p tag
   var dataID = $(this).attr("dataID");
   console.log("the data ID is: " + dataID)
-  $(this).closest("div").remove();
+  $(this).closest(".card").remove();
   deleteNote(dataID)
 })
 
@@ -91,15 +90,15 @@ function getNotes(thisId) {
     .then(function (data) {
       console.log(data);
       // The title of the article
-      let noteCard = $('<div>').addClass("card")
+      let noteCard = $('<div>').addClass("card shadow").attr("id", "notesCard")
       let notesCard;
 
       let formGroup = $("<div>").addClass("form-group");
       formGroup.append("<h5>" + data.title + "</h5>");
       // An input to enter a new title
-      formGroup.append("<input id='titleinput' name='title' placeholder='Title' ><br>");
+      formGroup.append("<input id='titleinput' class='form-control' type='text' name='title' placeholder='Title' ><br>");
       // A textarea to add a new note body
-      formGroup.append("<textarea id='bodyinput' name='body' placeholder='note text'></textarea><br>");
+      formGroup.append("<textarea class='form-control' id='bodyinput' name='body' placeholder='note text'></textarea><br>");
       // A button to submit a new note, with the id of the article saved to it
       formGroup.append("<button data-id='" + data._id + "' id='savenote' class='btn btn-primary mb-2'>Save Note</button>");
       noteCard.append(formGroup)
@@ -109,11 +108,11 @@ function getNotes(thisId) {
           let notesCardBody = $("<div>").addClass("card-body");
           let notesCardTitle = $('<h5>').attr("id", "cardTitle").addClass("card-title");;
           let notesCardComment = $('<p>').attr("id", "cardComments").addClass("card-text");;
-          let notesCardDeleteButton = $('<button>').addClass("btn btn-danger").attr("dataID", data.note[i]._id + "," + thisId).attr("id", "deleteButton").text("X")
+          let notesCardDeleteButton = $('<button>').addClass("btn btn-danger").attr("dataID", data.note[i]._id + "," + thisId).attr("id", "deleteButton").html("<i class='fas fa-minus-circle'></i>")
           console.log("Note " + [i] + " :" + data.note[i].title)
           notesCardTitle.text(data.note[i].title)
           notesCardComment.text(data.note[i].body)
-          notesCard = $('<div>').addClass("card")
+          notesCard = $('<div>').addClass("card shadow")
           notesCardBody.append(notesCardTitle, notesCardComment, notesCardDeleteButton)
           notesCard.append(notesCardBody)
           $("#notes").append(notesCard)
