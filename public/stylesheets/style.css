@@ -10,10 +10,19 @@ body {
   float: right;
 }
 
+
 #notes {
-  overflow-y: hidden;
-  max-height: 550px;
+  overflow-y: scroll;
+  position: sticky;
+  top: 75px;
 }
+
+
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent; /* make scrollbar transparent */
+}
+
 
 #notesCard {
   padding: 10px;

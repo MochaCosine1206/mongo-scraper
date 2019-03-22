@@ -24,9 +24,7 @@ $("#scrapeButton").click(function () {
   $.ajax({
     method: "GET",
     url: "/scrape"
-  })
-    // With that done, add the note information to the page
-    .then(function () {
+  }).then(function () {
       location.reload();
     });
   
